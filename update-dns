@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ipAddress=$(curl --silent icanhazip.com)
+touch current-ip
+previousIpAddress=$(cat current-ip)
+
+if [ "$ipAddress" != "$previousIpAddress" ]
+then
+  curl --silent https://www.cloudflare.com/api_json.html \
+    -d 'a=DIUP' \
+    -d "tkn=$CLOUDFLARE_API_KEY" \
+    -d "u=$CLOUDFLARE_USER" \
+    -d "z=$CLOUDFLARE_DOMAIN" \
+    -d "hosts=$CLOUDFLARE_HOST" \
+    -d "ip=$ipAddress" > /dev/null
+  echo $ipAddress > current-ip
+fi
